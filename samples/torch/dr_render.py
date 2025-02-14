@@ -3,6 +3,7 @@ from smplx import SMPL
 import nvdiffrast.torch as dr
 from typing import Optional, Union
 from PIL import Image
+import numpy as np
 
 
 class NVDRRenderer():
@@ -208,7 +209,7 @@ if __name__ == "__main__":
     coord_frame = o3d.geometry.TriangleMesh.create_coordinate_frame(size=1.0)
     vc = torch.tensor(coord_frame.vertex_colors).to(torch.float32)[None]
     v = torch.tensor(coord_frame.vertices).to(torch.float32)[None]
-    f = torch.tensor(coord_frame.triangles).to(torch.int32)[None]
+    f = torch.tensor(np.array(coord_frame.triangles, dtype=np.int32), dtype=torch.int32)
     
     R = coord_frame.get_rotation_matrix_from_xyz((torch.pi / 4, 0, 0))
     
