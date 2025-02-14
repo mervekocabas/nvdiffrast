@@ -37,6 +37,7 @@ class NVDRRenderer():
             self.height = height
         
         if init_smpl:
+            import ipdb; ipdb.set_trace()
             self.smpl = SMPL('../data/body_models/SMPL_python_v.1.1.0/smpl/models',gender='male').to(self.device)
             self.faces = self.smpl.faces_tensor.to(torch.int32)
             self.test_vertices = self.smpl().vertices
