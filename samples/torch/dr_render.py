@@ -179,7 +179,8 @@ class NVDRRenderer():
         
         mvp = self.get_mvp_matrix(cam_ext)
         pos_clip = self.transform_pos(mvp, vertices)
-        
+        print("Vertex Colors:", vertex_colors)
+
         rend_img = self.render_rgba(pos_clip, faces, vertex_colors, faces)
             
         if return_pil_image:
