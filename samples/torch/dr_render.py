@@ -223,4 +223,4 @@ if __name__ == "__main__":
     # img = renderer.forward(vertices=v, faces=f, vertex_colors=vc, cam_ext=cam_ext, return_pil_image=True, test_mode=False, return_rgba=True)
     img = renderer.forward(None, faces=None, cam_ext=cam_ext, return_pil_image=True, test_mode=True, return_rgba=True)
     print(img.size)
-    img.save('test.png')
+    img.save('outputs/test.png')
