@@ -200,7 +200,7 @@ class NVDRRenderer():
 if __name__ == "__main__":
     
     # Load BEDLAM Data
-    bedlam_data = np.load("samples/data/bedlam_input/filtered_first_image.npz", allow_pickle=True)
+    bedlam_data = np.load("samples/data/bedlam_input/filtered_seq_000000.npz", allow_pickle=True)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -222,15 +222,12 @@ if __name__ == "__main__":
     # Create output directory if it doesn't exist
     output_dir = "outputs"
     os.makedirs(output_dir, exist_ok=True)
-    import ipdb;ipdb.set_trace()
+    
     # Loop over unique images
     for imgname, indices in image_dict.items():
-        print(f"Processing: {imgname} with {len(indices)} people")
-
         # Collect all people for this image
-        all_vertices = []
-        all_faces = []
-        all_vertex_colors = []
+        all_vertices, all_faces, all_vertex_colors = [], [], []
+        all_cam_int, all_cam_ext = [], [] 
 
         for i in indices:
             gender = genders[i]
@@ -239,6 +236,16 @@ if __name__ == "__main__":
             # Get SMPLX parameters
             pose = torch.tensor(bedlam_data["pose_world"][i], dtype=torch.float32).to(device)
             shape = torch.tensor(bedlam_data["shape"][i], dtype=torch.float32).to(device)
+            pose = pose.unsqueeze(0)
+            shape = shape.unsqueeze(0)
+            
+            # Get per-person camera matrices
+            cam_int = torch.tensor(bedlam_data["cam_int"][i], dtype=torch.float32).to(device)
+            cam_ext = torch.tensor(bedlam_data["cam_ext"][i], dtype=torch.float32).to(device)
+
+            # Store in batch lists
+            all_cam_int.append(cam_int.unsqueeze(0))  
+            all_cam_ext.append(cam_ext.unsqueeze(0))
 
             # Get 3D mesh
             smplx_output = smplx_model(
@@ -263,16 +270,15 @@ if __name__ == "__main__":
         all_vertices = torch.stack(all_vertices).to(device)
         all_faces = all_faces[0]  # Faces are the same for all people
         all_vertex_colors = torch.stack(all_vertex_colors).to(device)
-
-        # Camera settings (assuming all instances share the same intrinsics/extrinsics)
-        cam_int = torch.tensor(bedlam_data["cam_int"][indices[0]], dtype=torch.float32).to(device)
-        cam_ext = torch.tensor(bedlam_data["cam_ext"][indices[0]], dtype=torch.float32).to(device)
-
+        all_cam_int = torch.stack(all_cam_int).squeeze(1).to(device) 
+        all_cam_ext = torch.stack(all_cam_ext).squeeze(1).to(device) 
+       
+        import ipdb;ipdb.set_trace()
         # Initialize Renderer
-        renderer = NVDRRenderer(cam_intrinsics=cam_int, faces=all_faces)
+        renderer = NVDRRenderer(cam_intrinsics=all_cam_int, faces=all_faces)
 
         # Render Image
-        img = renderer.forward(vertices=all_vertices, faces=all_faces, vertex_colors=all_vertex_colors, cam_ext=cam_ext, return_pil_image=True, return_rgba=True)
+        img = renderer.forward(vertices=all_vertices, faces=all_faces, vertex_colors=all_vertex_colors, cam_ext=all_cam_ext, return_pil_image=True, return_rgba=True)
 
         # Save Image
         img_output_path = os.path.join(output_dir, f"rendered_{imgname.replace('/', '_')}")
