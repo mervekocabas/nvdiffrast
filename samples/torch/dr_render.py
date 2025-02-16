@@ -202,38 +202,53 @@ if __name__ == "__main__":
     bedlam_data = np.load("samples/data/bedlam_input/filtered_first_image.npz", allow_pickle=True)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
+    # Extract imgname
+    imgname = bedlam_data["imgname"]
+      
     # 🔹 Extract necessary fields
     pose = torch.tensor(bedlam_data["pose_world"], dtype=torch.float32)  # Pose parameters
     shape = torch.tensor(bedlam_data["shape"], dtype=torch.float32)      # SMPL Shape
     cam_int = torch.tensor(bedlam_data["cam_int"], dtype=torch.float32)  # Intrinsics
     cam_ext = torch.tensor(bedlam_data["cam_ext"], dtype=torch.float32)  # Extrinsics
-    cam_int = cam_int.unsqueeze(0)
-    cam_ext = cam_ext.unsqueeze(0)
-    pose = pose.unsqueeze(0)
-    shape = shape.unsqueeze(0)
-    pose = pose.to(device)
-    shape = shape.to(device)
    
-    # 🔹 Initialize SMPL Model
-    smplx = SMPLX('samples/data/body_models/smplx/models/smplx/', gender='female').cuda()
-    smplx = smplx.to(device) 
+    #pose = pose.to(device)
+    #shape = shape.to(device)
     
-    # 🔹 Get 3D vertices & faces from SMPL
-    smplx_output = smplx(body_pose=pose[:, 3:66], global_orient=pose[:,:3], betas=shape[:, :10],use_pca=False )
-    vertices = smplx_output.vertices  # (B, N, 3)
-    faces = smplx.faces_tensor.to(torch.int32)  # SMPL faces
-    
-    # 🔹 Prepare vertex colors (white by default)
-    vertex_colors = torch.ones_like(vertices)  # (B, N, 3)
+    # Initialize SMPLX models for both genders
+    smplx_male = SMPLX('samples/data/body_models/smplx/models/smplx/', gender='male').cuda()
+    smplx_female = SMPLX('samples/data/body_models/smplx/models/smplx/', gender='female').cuda()
 
-    # 🔹 Initialize the Renderer
-    renderer = NVDRRenderer(cam_intrinsics=cam_int, faces=faces)
+    # Iterate over each sample in the batch
+    for i in range(len(bedlam_data['gender'])):
+        gender = bedlam_data['gender'][i]  # Get gender for the current sample
+        
+        smplx_model = smplx_female if gender == "female" else smplx_male  # Select model
 
-    # 🔹 Render Image
-    img = renderer.forward(vertices=vertices, faces=faces, vertex_colors=vertex_colors, cam_ext=cam_ext, return_pil_image=True, return_rgba=True)
-  
-    # 🔹 Save Image
-    img.save("outputs/bedlam_render.png")
+        pose_i = pose[i].unsqueeze(0)  
+        shape_i = shape[i].unsqueeze(0)
+
+        smplx_output = smplx_model(
+            body_pose=pose_i[:, 3:66], 
+            global_orient=pose_i[:, :3], 
+            betas=shape_i[:, :10], 
+            use_pca=False
+        )
+
+        vertices = smplx_output.vertices  # (1, N, 3)
+        faces = smplx_model.faces_tensor.to(torch.int32)  # Get faces
+        
+        vertex_colors = torch.ones_like(vertices)  # (B, N, 3)
+        
+        renderer = NVDRRenderer(cam_intrinsics=cam_int, faces=faces)
+        
+        # Render each image separately
+        img = renderer.forward(
+            vertices=vertices, faces=faces, vertex_colors=vertex_colors, 
+            cam_ext=cam_ext[i].unsqueeze(0), return_pil_image=True, return_rgba=True
+        )
+
+        # Save the image with the correct filename
+        img.save(f"outputs/rendered_{i}.png")
     
     cam_int = torch.zeros(1, 4, 4)
     cam_int[:, 0, 0] = 1004.63
@@ -261,7 +276,6 @@ if __name__ == "__main__":
     print(renderer.test_cam_ext)
     #img = renderer.forward(vertices=v, faces=f, vertex_colors=vc, cam_ext=cam_ext, return_pil_image=True, test_mode=False, return_rgba=True)
     img = renderer.forward(None, faces=None, cam_ext=cam_ext, return_pil_image=True, test_mode=True, return_rgba=True)
-    import ipdb; ipdb.set_trace()
     print(img.size)
     img.save('outputs/test.png')
     
