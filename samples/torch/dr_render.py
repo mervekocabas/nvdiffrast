@@ -213,7 +213,7 @@ if __name__ == "__main__":
     shape = shape.unsqueeze(0)
     pose = pose.to(device)
     shape = shape.to(device)
-    
+    import ipdb; ipdb.set_trace()
     # 🔹 Initialize SMPL Model
     smplx = SMPLX('samples/data/body_models/smplx/models/smplx/', gender='female').cuda()
     smplx = smplx.to(device) 
