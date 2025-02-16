@@ -221,7 +221,7 @@ if __name__ == "__main__":
     smplx_female = SMPLX('samples/data/body_models/smplx/models/smplx/', gender='female').to(device)
     
     output_dir = "outputs"
-    
+    import ipdb;ipdb.set_trace()
     # Iterate over each sample in the batch
     for i in range(len(imgname)):
         imgname = imgname[i]
