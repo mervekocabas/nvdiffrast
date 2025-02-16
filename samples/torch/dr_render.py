@@ -196,6 +196,36 @@ class NVDRRenderer():
 
     
 if __name__ == "__main__":
+    # 🔹 Load BEDLAM Data
+    bedlam_data = np.load("projects/nvdiffrast/samples/data/bedlam_input/filtered_seq_000000.npz", allow_pickle=True)
+
+    # 🔹 Extract necessary fields
+    pose = torch.tensor(bedlam_data["pose_world"], dtype=torch.float32)  # Pose parameters
+    shape = torch.tensor(bedlam_data["shape"], dtype=torch.float32)      # SMPL Shape
+    cam_int = torch.tensor(bedlam_data["cam_int"], dtype=torch.float32)  # Intrinsics
+    cam_ext = torch.tensor(bedlam_data["cam_ext"], dtype=torch.float32)  # Extrinsics
+
+    # 🔹 Initialize SMPL Model
+    smpl = SMPL('samples/data/body_models/SMPL_python_v.1.1.0/smpl/models', gender='male').cuda()
+
+    # 🔹 Get 3D vertices & faces from SMPL
+    smpl_output = smpl(body_pose=pose[:, 3:], global_orient=pose[:, :3], betas=shape)
+    vertices = smpl_output.vertices  # (B, N, 3)
+    faces = smpl.faces_tensor.to(torch.int32)  # SMPL faces
+
+    # 🔹 Prepare vertex colors (white by default)
+    vertex_colors = torch.ones_like(vertices)  # (B, N, 3)
+
+    # 🔹 Initialize the Renderer
+    renderer = NVDRRenderer(cam_intrinsics=cam_int, faces=faces)
+
+    # 🔹 Render Image
+    img = renderer.forward(vertices=vertices, faces=faces, vertex_colors=vertex_colors, cam_ext=cam_ext, return_pil_image=True)
+
+    # 🔹 Save Image
+    img.save("outputs/bedlam_render.png")
+    
+    """
     cam_int = torch.zeros(1, 4, 4)
     cam_int[:, 0, 0] = 1004.63
     cam_int[:, 1, 1] = 1004.63
@@ -224,3 +254,4 @@ if __name__ == "__main__":
     img = renderer.forward(None, faces=None, cam_ext=cam_ext, return_pil_image=True, test_mode=True, return_rgba=True)
     print(img.size)
     img.save('outputs/test.png')
+    """
