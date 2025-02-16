@@ -222,7 +222,7 @@ if __name__ == "__main__":
     # Create output directory if it doesn't exist
     output_dir = "outputs"
     os.makedirs(output_dir, exist_ok=True)
-
+    import ipdb;ipdb.set_trace()
     # Loop over unique images
     for imgname, indices in image_dict.items():
         print(f"Processing: {imgname} with {len(indices)} people")
