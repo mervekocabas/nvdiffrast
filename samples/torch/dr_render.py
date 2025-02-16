@@ -231,24 +231,10 @@ if __name__ == "__main__":
 
     # 🔹 Render Image
     img = renderer.forward(vertices=vertices, faces=faces, vertex_colors=vertex_colors, cam_ext=cam_ext, return_pil_image=True)
-    import ipdb; ipdb.set_trace()
+  
     # 🔹 Save Image
     img.save("outputs/bedlam_render.png")
     
-    # Create Open3D coordinate frame
-    import open3d as o3d
-    coord_frame = o3d.geometry.TriangleMesh.create_coordinate_frame(size=1.0)
-    vc = torch.tensor(np.array(coord_frame.vertex_colors), dtype=torch.float32)[None].cuda()
-    v = torch.tensor(np.array(coord_frame.vertices), dtype=torch.float32)[None].cuda()
-    f = torch.tensor(np.array(coord_frame.triangles), dtype=torch.int32).cuda()
-    
-    v[:, :, 2] += 3.0
-    import ipdb; ipdb.set_trace()
-    # Render test
-    test_img = renderer.forward(vertices=v, faces=f, vertex_colors=vc, cam_ext=cam_ext, return_pil_image=True)
-    test_img.save('outputs/test_cube.png')
-    
-    """
     cam_int = torch.zeros(1, 4, 4)
     cam_int[:, 0, 0] = 1004.63
     cam_int[:, 1, 1] = 1004.63
@@ -275,6 +261,7 @@ if __name__ == "__main__":
     print(renderer.test_cam_ext)
     #img = renderer.forward(vertices=v, faces=f, vertex_colors=vc, cam_ext=cam_ext, return_pil_image=True, test_mode=False, return_rgba=True)
     img = renderer.forward(None, faces=None, cam_ext=cam_ext, return_pil_image=True, test_mode=True, return_rgba=True)
+    import ipdb; ipdb.set_trace()
     print(img.size)
     img.save('outputs/test.png')
-    """
+    
