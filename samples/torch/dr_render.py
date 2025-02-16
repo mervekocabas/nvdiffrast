@@ -204,8 +204,8 @@ if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
     # Extract imgname
-    imgname = np.asarray(bedlam_data["imgname"]).squeeze()  # Ensure it's a flat array
-    gender = np.asarray(bedlam_data["gender"]).squeeze()
+    imgname = bedlam_data["imgname"].tolist()
+    gender = bedlam_data["gender"].tolist()
     
     # 🔹 Extract necessary fields
     pose = torch.tensor(bedlam_data["pose_world"], dtype=torch.float32)  # Pose parameters
