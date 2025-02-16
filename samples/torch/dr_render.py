@@ -204,7 +204,8 @@ if __name__ == "__main__":
     
     # Extract imgname
     imgname = bedlam_data["imgname"]
-      
+    genders = np.array(bedlam_data["gender"]) 
+                                   
     # 🔹 Extract necessary fields
     pose = torch.tensor(bedlam_data["pose_world"], dtype=torch.float32)  # Pose parameters
     shape = torch.tensor(bedlam_data["shape"], dtype=torch.float32)      # SMPL Shape
@@ -219,7 +220,7 @@ if __name__ == "__main__":
     smplx_female = SMPLX('samples/data/body_models/smplx/models/smplx/', gender='female').cuda()
 
     # Iterate over each sample in the batch
-    for i in range(len(bedlam_data['gender'])):
+    for i in range(len(genders)):
         gender = bedlam_data['gender'][i]  # Get gender for the current sample
         
         smplx_model = smplx_female if gender == "female" else smplx_male  # Select model
