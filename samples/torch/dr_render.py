@@ -201,25 +201,27 @@ if __name__ == "__main__":
     
     bedlam_data = np.load("samples/data/bedlam_input/filtered_first_image.npz", allow_pickle=True)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    
     # 🔹 Extract necessary fields
     pose = torch.tensor(bedlam_data["pose_world"], dtype=torch.float32)  # Pose parameters
     shape = torch.tensor(bedlam_data["shape"], dtype=torch.float32)      # SMPL Shape
     cam_int = torch.tensor(bedlam_data["cam_int"], dtype=torch.float32)  # Intrinsics
     cam_ext = torch.tensor(bedlam_data["cam_ext"], dtype=torch.float32)  # Extrinsics
+    cam_int = cam_int.unsqueeze(0)
+    cam_ext = cam_ext.unsqueeze(0)
     
     pose = pose.to(device)
     shape = shape.to(device)
-
-    import ipdb; ipdb.set_trace()
+    
     # 🔹 Initialize SMPL Model
     smplx = SMPLX('samples/data/body_models/smplx/models/smplx/', gender='female').cuda()
     smplx = smplx.to(device) 
 
     # 🔹 Get 3D vertices & faces from SMPL
-    smplx_output = smplx(body_pose=pose[:, 3:], global_orient=pose[:, :3], betas=shape,use_pca=False )
+    smplx_output = smplx(body_pose=pose[:, 3:66], global_orient=pose[:,:3], betas=shape[:, :10],use_pca=False )
     vertices = smplx_output.vertices  # (B, N, 3)
     faces = smplx.faces_tensor.to(torch.int32)  # SMPL faces
-
+    
     # 🔹 Prepare vertex colors (white by default)
     vertex_colors = torch.ones_like(vertices)  # (B, N, 3)
 
