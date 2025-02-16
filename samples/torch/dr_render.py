@@ -205,7 +205,7 @@ if __name__ == "__main__":
     # Extract imgname
     imgname = bedlam_data["imgname"]
     genders = np.array(bedlam_data["gender"]) 
-                                   
+    import ipdb; ipdb.set_trace() 
     # 🔹 Extract necessary fields
     pose = torch.tensor(bedlam_data["pose_world"], dtype=torch.float32)  # Pose parameters
     shape = torch.tensor(bedlam_data["shape"], dtype=torch.float32)      # SMPL Shape
