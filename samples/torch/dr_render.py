@@ -199,29 +199,30 @@ class NVDRRenderer():
 if __name__ == "__main__":
     # 🔹 Load BEDLAM Data
     
-    bedlam_data = np.load("samples/data/bedlam_input/filtered_first_image.npz", allow_pickle=True)
+    bedlam_data = np.load("samples/data/bedlam_input/filtered_seq_000000.npz", allow_pickle=True)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
     # Extract imgname
     imgname = bedlam_data["imgname"]
-    genders = np.array(bedlam_data["gender"]) 
-    import ipdb; ipdb.set_trace() 
+    gender = bedlam_data["gender"]
+    
     # 🔹 Extract necessary fields
     pose = torch.tensor(bedlam_data["pose_world"], dtype=torch.float32)  # Pose parameters
     shape = torch.tensor(bedlam_data["shape"], dtype=torch.float32)      # SMPL Shape
     cam_int = torch.tensor(bedlam_data["cam_int"], dtype=torch.float32)  # Intrinsics
     cam_ext = torch.tensor(bedlam_data["cam_ext"], dtype=torch.float32)  # Extrinsics
    
-    #pose = pose.to(device)
-    #shape = shape.to(device)
+    pose = pose.to(device)
+    shape = shape.to(device)
     
     # Initialize SMPLX models for both genders
-    smplx_male = SMPLX('samples/data/body_models/smplx/models/smplx/', gender='male').cuda()
-    smplx_female = SMPLX('samples/data/body_models/smplx/models/smplx/', gender='female').cuda()
-
+    smplx_male = SMPLX('samples/data/body_models/smplx/models/smplx/', gender='male').to(device)
+    smplx_female = SMPLX('samples/data/body_models/smplx/models/smplx/', gender='female').to(device)
+    
     # Iterate over each sample in the batch
-    for i in range(len(genders)):
-        gender = bedlam_data['gender'][i]  # Get gender for the current sample
+    for i in range(len(imgname)):
+        imgname = imgname[i]
+        gender = gender[i]  # Get gender for the current sample
         
         smplx_model = smplx_female if gender == "female" else smplx_male  # Select model
 
@@ -240,7 +241,7 @@ if __name__ == "__main__":
         
         vertex_colors = torch.ones_like(vertices)  # (B, N, 3)
         
-        renderer = NVDRRenderer(cam_intrinsics=cam_int, faces=faces)
+        renderer = NVDRRenderer(cam_intrinsics=cam_int[i].unsqueeze(0), faces=faces)
         
         # Render each image separately
         img = renderer.forward(
@@ -249,7 +250,7 @@ if __name__ == "__main__":
         )
 
         # Save the image with the correct filename
-        img.save(f"outputs/rendered_{i}.png")
+        img.save(f"outputs/rendered_{imgname}")
     
     cam_int = torch.zeros(1, 4, 4)
     cam_int[:, 0, 0] = 1004.63
