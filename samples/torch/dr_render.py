@@ -215,10 +215,9 @@ if __name__ == "__main__":
         image_dict[imgname].append(i)  # Store the index of each person
 
     # Initialize SMPLX model (we will change gender dynamically)
-    smplx_models = {
-        "male": SMPLX('samples/data/body_models/smplx/models/smplx/', gender='male').cuda(),
-        "female": SMPLX('samples/data/body_models/smplx/models/smplx/', gender='female').cuda(),
-    }
+    smplx_male = SMPLX('samples/data/body_models/smplx/models/smplx/', gender='male').to(device)
+    smplx_female = SMPLX('samples/data/body_models/smplx/models/smplx/', gender='female').to(device)
+    
 
     # Create output directory if it doesn't exist
     output_dir = "outputs"
@@ -235,7 +234,7 @@ if __name__ == "__main__":
 
         for i in indices:
             gender = genders[i]
-            smplx = smplx_models[gender]  # Select correct gender model
+            smplx_model = smplx_female if gender == "female" else smplx_male  # Select model
 
             # Get SMPLX parameters
             pose = torch.tensor(bedlam_data["pose_world"][i], dtype=torch.float32).to(device)
