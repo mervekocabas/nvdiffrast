@@ -213,7 +213,7 @@ if __name__ == "__main__":
     shape = shape.unsqueeze(0)
     pose = pose.to(device)
     shape = shape.to(device)
-    import ipdb; ipdb.set_trace()
+   
     # 🔹 Initialize SMPL Model
     smplx = SMPLX('samples/data/body_models/smplx/models/smplx/', gender='female').cuda()
     smplx = smplx.to(device) 
@@ -234,6 +234,17 @@ if __name__ == "__main__":
 
     # 🔹 Save Image
     img.save("outputs/bedlam_render.png")
+    
+    # Create Open3D coordinate frame
+    import open3d as o3d
+    coord_frame = o3d.geometry.TriangleMesh.create_coordinate_frame(size=1.0)
+    vc = torch.tensor(np.array(coord_frame.vertex_colors), dtype=torch.float32)[None].cuda()
+    v = torch.tensor(np.array(coord_frame.vertices), dtype=torch.float32)[None].cuda()
+    f = torch.tensor(np.array(coord_frame.triangles), dtype=torch.int32).cuda()
+
+    # Render test
+    test_img = renderer.forward(vertices=v, faces=f, vertex_colors=vc, cam_ext=cam_ext, return_pil_image=True)
+    test_img.save('outputs/test_cube.png')
     
     """
     cam_int = torch.zeros(1, 4, 4)
