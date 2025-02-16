@@ -199,7 +199,7 @@ if __name__ == "__main__":
     # 🔹 Load BEDLAM Data
     import ipdb; ipdb.set_trace()
     bedlam_data = np.load("../data/bedlam_input/filtered_seq_000000.npz", allow_pickle=True)
-   
+
     # 🔹 Extract necessary fields
     pose = torch.tensor(bedlam_data["pose_world"], dtype=torch.float32)  # Pose parameters
     shape = torch.tensor(bedlam_data["shape"], dtype=torch.float32)      # SMPL Shape
