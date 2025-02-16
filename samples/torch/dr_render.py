@@ -241,7 +241,9 @@ if __name__ == "__main__":
     vc = torch.tensor(np.array(coord_frame.vertex_colors), dtype=torch.float32)[None].cuda()
     v = torch.tensor(np.array(coord_frame.vertices), dtype=torch.float32)[None].cuda()
     f = torch.tensor(np.array(coord_frame.triangles), dtype=torch.int32).cuda()
-
+    
+    v[:, :, 2] += 3.0
+    
     # Render test
     test_img = renderer.forward(vertices=v, faces=f, vertex_colors=vc, cam_ext=cam_ext, return_pil_image=True)
     test_img.save('outputs/test_cube.png')
