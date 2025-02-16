@@ -231,7 +231,7 @@ if __name__ == "__main__":
 
     # 🔹 Render Image
     img = renderer.forward(vertices=vertices, faces=faces, vertex_colors=vertex_colors, cam_ext=cam_ext, return_pil_image=True)
-
+    import ipdb; ipdb.set_trace()
     # 🔹 Save Image
     img.save("outputs/bedlam_render.png")
     
@@ -243,7 +243,7 @@ if __name__ == "__main__":
     f = torch.tensor(np.array(coord_frame.triangles), dtype=torch.int32).cuda()
     
     v[:, :, 2] += 3.0
-    
+    import ipdb; ipdb.set_trace()
     # Render test
     test_img = renderer.forward(vertices=v, faces=f, vertex_colors=vc, cam_ext=cam_ext, return_pil_image=True)
     test_img.save('outputs/test_cube.png')
