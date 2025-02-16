@@ -6,7 +6,7 @@ from typing import Optional, Union
 from PIL import Image
 import numpy as np
 import os
-
+from collections import defaultdict
 
 class NVDRRenderer():
     def __init__(
@@ -198,8 +198,90 @@ class NVDRRenderer():
 
     
 if __name__ == "__main__":
-    # 🔹 Load BEDLAM Data
     
+    # Load BEDLAM Data
+    bedlam_data = np.load("samples/data/bedlam_input/filtered_first_image.npz", allow_pickle=True)
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    # Convert imgname and gender to lists
+    imgnames = bedlam_data["imgname"].tolist()
+    genders = bedlam_data["gender"].tolist()
+
+    # Group SMPLX data by image
+    image_dict = defaultdict(list)
+
+    for i, imgname in enumerate(imgnames):
+        image_dict[imgname].append(i)  # Store the index of each person
+
+    # Initialize SMPLX model (we will change gender dynamically)
+    smplx_models = {
+        "male": SMPLX('samples/data/body_models/smplx/models/smplx/', gender='male').cuda(),
+        "female": SMPLX('samples/data/body_models/smplx/models/smplx/', gender='female').cuda(),
+    }
+
+    # Create output directory if it doesn't exist
+    output_dir = "outputs"
+    os.makedirs(output_dir, exist_ok=True)
+
+    # Loop over unique images
+    for imgname, indices in image_dict.items():
+        print(f"Processing: {imgname} with {len(indices)} people")
+
+        # Collect all people for this image
+        all_vertices = []
+        all_faces = []
+        all_vertex_colors = []
+
+        for i in indices:
+            gender = genders[i]
+            smplx = smplx_models[gender]  # Select correct gender model
+
+            # Get SMPLX parameters
+            pose = torch.tensor(bedlam_data["pose_world"][i], dtype=torch.float32).to(device)
+            shape = torch.tensor(bedlam_data["shape"][i], dtype=torch.float32).to(device)
+
+            # Get 3D mesh
+            smplx_output = smplx(
+                body_pose=pose[3:66].unsqueeze(0),
+                global_orient=pose[:3].unsqueeze(0),
+                betas=shape[:10].unsqueeze(0),
+                use_pca=False,
+            )
+            
+            vertices = smplx_output.vertices.squeeze(0)
+            faces = smplx.faces_tensor.to(torch.int32)
+
+            # Set vertex colors (default: white)
+            vertex_colors = torch.ones_like(vertices)
+
+            # Store for batch rendering
+            all_vertices.append(vertices)
+            all_faces.append(faces)
+            all_vertex_colors.append(vertex_colors)
+
+        # Convert lists to tensors
+        all_vertices = torch.stack(all_vertices).to(device)
+        all_faces = all_faces[0]  # Faces are the same for all people
+        all_vertex_colors = torch.stack(all_vertex_colors).to(device)
+
+        # Camera settings (assuming all instances share the same intrinsics/extrinsics)
+        cam_int = torch.tensor(bedlam_data["cam_int"][indices[0]], dtype=torch.float32).to(device)
+        cam_ext = torch.tensor(bedlam_data["cam_ext"][indices[0]], dtype=torch.float32).to(device)
+
+        # Initialize Renderer
+        renderer = NVDRRenderer(cam_intrinsics=cam_int, faces=all_faces)
+
+        # Render Image
+        img = renderer.forward(vertices=all_vertices, faces=all_faces, vertex_colors=all_vertex_colors, cam_ext=cam_ext, return_pil_image=True, return_rgba=True)
+
+        # Save Image
+        img_output_path = os.path.join(output_dir, f"rendered_{imgname.replace('/', '_')}")
+        img.save(img_output_path)
+        print(f"Saved: {img_output_path}")
+    
+    """
+    # 🔹 Load BEDLAM Data
     bedlam_data = np.load("samples/data/bedlam_input/filtered_seq_000000.npz", allow_pickle=True)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
@@ -285,4 +367,4 @@ if __name__ == "__main__":
     img = renderer.forward(None, faces=None, cam_ext=cam_ext, return_pil_image=True, test_mode=True, return_rgba=True)
     print(img.size)
     img.save('outputs/test.png')
-    
+    """
