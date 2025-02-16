@@ -241,7 +241,7 @@ if __name__ == "__main__":
             shape = torch.tensor(bedlam_data["shape"][i], dtype=torch.float32).to(device)
 
             # Get 3D mesh
-            smplx_output = smplx(
+            smplx_output = smplx_model(
                 body_pose=pose[3:66].unsqueeze(0),
                 global_orient=pose[:3].unsqueeze(0),
                 betas=shape[:10].unsqueeze(0),
@@ -249,7 +249,7 @@ if __name__ == "__main__":
             )
             
             vertices = smplx_output.vertices.squeeze(0)
-            faces = smplx.faces_tensor.to(torch.int32)
+            faces = smplx_model.faces_tensor.to(torch.int32)
 
             # Set vertex colors (default: white)
             vertex_colors = torch.ones_like(vertices)
