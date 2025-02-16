@@ -252,7 +252,7 @@ if __name__ == "__main__":
             cam_ext=cam_ext[i].unsqueeze(0), return_pil_image=True, return_rgba=True
         )
         
-        img_path = os.path.join(output_dir, f"rendered_{imgnames}.png")
+        img_path = os.path.join(output_dir, f"rendered_{imgnames}")
         os.makedirs(os.path.dirname(img_path), exist_ok=True)
         # Save the image with the correct filename
         img.save(img_path)
