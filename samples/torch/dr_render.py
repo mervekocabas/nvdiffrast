@@ -5,6 +5,7 @@ import nvdiffrast.torch as dr
 from typing import Optional, Union
 from PIL import Image
 import numpy as np
+import os
 
 
 class NVDRRenderer():
@@ -219,6 +220,8 @@ if __name__ == "__main__":
     smplx_male = SMPLX('samples/data/body_models/smplx/models/smplx/', gender='male').to(device)
     smplx_female = SMPLX('samples/data/body_models/smplx/models/smplx/', gender='female').to(device)
     
+    output_dir = "outputs"
+    
     # Iterate over each sample in the batch
     for i in range(len(imgname)):
         imgname = imgname[i]
@@ -248,9 +251,11 @@ if __name__ == "__main__":
             vertices=vertices, faces=faces, vertex_colors=vertex_colors, 
             cam_ext=cam_ext[i].unsqueeze(0), return_pil_image=True, return_rgba=True
         )
-
+        
+        img_path = os.path.join(output_dir, f"rendered_{imgname}.png")
+        os.makedirs(os.path.dirname(img_path), exist_ok=True)
         # Save the image with the correct filename
-        img.save(f"outputs/rendered_{imgname}")
+        img.save(img_path)
     
     cam_int = torch.zeros(1, 4, 4)
     cam_int[:, 0, 0] = 1004.63
