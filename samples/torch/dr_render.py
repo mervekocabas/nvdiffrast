@@ -179,7 +179,6 @@ class NVDRRenderer():
         
         mvp = self.get_mvp_matrix(cam_ext)
         pos_clip = self.transform_pos(mvp, vertices)
-        print("Vertex Colors:", vertex_colors)
 
         rend_img = self.render_rgba(pos_clip, faces, vertex_colors, faces)
             
@@ -221,7 +220,7 @@ if __name__ == "__main__":
     renderer = NVDRRenderer(cam_intrinsics=cam_int, init_smpl=True)
     print(renderer.projection_matrix)
     print(renderer.test_cam_ext)
-    # img = renderer.forward(vertices=v, faces=f, vertex_colors=vc, cam_ext=cam_ext, return_pil_image=True, test_mode=False, return_rgba=True)
-    img = renderer.forward(None, faces=None, cam_ext=cam_ext, return_pil_image=True, test_mode=True, return_rgba=True)
+    img = renderer.forward(vertices=v, faces=f, vertex_colors=vc, cam_ext=cam_ext, return_pil_image=True, test_mode=False, return_rgba=True)
+    #img = renderer.forward(None, faces=None, cam_ext=cam_ext, return_pil_image=True, test_mode=True, return_rgba=True)
     print(img.size)
     img.save('outputs/test.png')
