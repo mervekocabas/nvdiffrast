@@ -230,7 +230,7 @@ if __name__ == "__main__":
     renderer = NVDRRenderer(cam_intrinsics=cam_int, faces=faces)
 
     # 🔹 Render Image
-    img = renderer.forward(vertices=vertices, faces=faces, vertex_colors=vertex_colors, cam_ext=cam_ext, return_pil_image=True)
+    img = renderer.forward(vertices=vertices, faces=faces, vertex_colors=vertex_colors, cam_ext=cam_ext, return_pil_image=True, return_rgba=True)
   
     # 🔹 Save Image
     img.save("outputs/bedlam_render.png")
