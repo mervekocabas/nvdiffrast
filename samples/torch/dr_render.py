@@ -209,14 +209,15 @@ if __name__ == "__main__":
     cam_ext = torch.tensor(bedlam_data["cam_ext"], dtype=torch.float32)  # Extrinsics
     cam_int = cam_int.unsqueeze(0)
     cam_ext = cam_ext.unsqueeze(0)
-    
+    pose = pose.unsqueeze(0)
+    shape = shape.unsqueeze(0)
     pose = pose.to(device)
     shape = shape.to(device)
     
     # 🔹 Initialize SMPL Model
     smplx = SMPLX('samples/data/body_models/smplx/models/smplx/', gender='female').cuda()
     smplx = smplx.to(device) 
-
+    
     # 🔹 Get 3D vertices & faces from SMPL
     smplx_output = smplx(body_pose=pose[:, 3:66], global_orient=pose[:,:3], betas=shape[:, :10],use_pca=False )
     vertices = smplx_output.vertices  # (B, N, 3)
