@@ -242,9 +242,9 @@ if __name__ == "__main__":
 
             # Get 3D mesh
             smplx_output = smplx_model(
-                body_pose=pose[3:66].unsqueeze(0),
-                global_orient=pose[:3].unsqueeze(0),
-                betas=shape[:10].unsqueeze(0),
+                body_pose=pose[:,3:66],
+                global_orient=pose[:,:3],
+                betas=shape[:,:10],
                 use_pca=False,
             )
             
