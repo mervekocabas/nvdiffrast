@@ -221,13 +221,13 @@ if __name__ == "__main__":
     smplx_female = SMPLX('samples/data/body_models/smplx/models/smplx/', gender='female').to(device)
     
     output_dir = "outputs"
-    import ipdb;ipdb.set_trace()
+    
     # Iterate over each sample in the batch
     for i in range(len(imgname)):
-        imgname = imgname[i]
-        gender = gender[i]  # Get gender for the current sample
+        imgnames = imgname[i]
+        genders = gender[i]  # Get gender for the current sample
         
-        smplx_model = smplx_female if gender == "female" else smplx_male  # Select model
+        smplx_model = smplx_female if genders == "female" else smplx_male  # Select model
 
         pose_i = pose[i].unsqueeze(0)  
         shape_i = shape[i].unsqueeze(0)
@@ -252,7 +252,7 @@ if __name__ == "__main__":
             cam_ext=cam_ext[i].unsqueeze(0), return_pil_image=True, return_rgba=True
         )
         
-        img_path = os.path.join(output_dir, f"rendered_{imgname}.png")
+        img_path = os.path.join(output_dir, f"rendered_{imgnames}.png")
         os.makedirs(os.path.dirname(img_path), exist_ok=True)
         # Save the image with the correct filename
         img.save(img_path)
