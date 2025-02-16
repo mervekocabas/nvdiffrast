@@ -217,14 +217,13 @@ if __name__ == "__main__":
     # Initialize SMPLX model (we will change gender dynamically)
     smplx_male = SMPLX('samples/data/body_models/smplx/models/smplx/', gender='male').to(device)
     smplx_female = SMPLX('samples/data/body_models/smplx/models/smplx/', gender='female').to(device)
-    
-
-    # Create output directory if it doesn't exist
-    output_dir = "outputs"
-    os.makedirs(output_dir, exist_ok=True)
-    
+        
     # Loop over unique images
     for imgname, indices in image_dict.items():
+        # Define canvas size (e.g., 1920x1080 for BEDLAM)
+        width, height = 1920, 1080
+        canvas = Image.new("RGB", (width, height), (0, 0, 0))
+    
         # Collect all people for this image
         all_vertices, all_faces, all_vertex_colors = [], [], []
         all_cam_int, all_cam_ext = [], [] 
@@ -268,22 +267,28 @@ if __name__ == "__main__":
 
         # Convert lists to tensors
         all_vertices = torch.stack(all_vertices).to(device)
-        all_faces = all_faces[0]  # Faces are the same for all people
         all_vertex_colors = torch.stack(all_vertex_colors).to(device)
         all_cam_int = torch.stack(all_cam_int).squeeze(1).to(device) 
         all_cam_ext = torch.stack(all_cam_ext).squeeze(1).to(device) 
-       
-        import ipdb;ipdb.set_trace()
-        # Initialize Renderer
-        renderer = NVDRRenderer(cam_intrinsics=all_cam_int, faces=all_faces)
-
-        # Render Image
-        img = renderer.forward(vertices=all_vertices, faces=all_faces, vertex_colors=all_vertex_colors, cam_ext=all_cam_ext, return_pil_image=True, return_rgba=True)
-
-        # Save Image
-        img_output_path = os.path.join(output_dir, f"rendered_{imgname.replace('/', '_')}")
+        batch_size = all_vertices.shape[0]
+        
+        for i in range(batch_size):
+            renderer = NVDRRenderer(cam_intrinsics=all_cam_int[i].unsqueeze(0), faces=faces)
+            img = renderer.forward(
+                vertices=all_vertices[i].unsqueeze(0),
+                faces=all_faces[0],
+                vertex_colors=all_vertex_colors[i].unsqueeze(0),
+                cam_ext=all_cam_ext[i].unsqueeze(0),
+                return_pil_image=True,
+                return_rgba=True
+            )
+            # Paste each rendered person onto the canvas
+            canvas.paste(img, (0, 0), img) 
+    
+        img_output_path = os.path.join('outputs', f"rendered_{imgname}")
+        os.makedirs(os.path.dirname(img_output_path), exist_ok=True)
         img.save(img_output_path)
-        print(f"Saved: {img_output_path}")
+    
     
     """
     # 🔹 Load BEDLAM Data
