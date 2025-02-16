@@ -198,7 +198,7 @@ class NVDRRenderer():
 if __name__ == "__main__":
     # 🔹 Load BEDLAM Data
     
-    bedlam_data = np.load("../data/bedlam_input/filtered_seq_000000.npz", allow_pickle=True)
+    bedlam_data = np.load("samples/data/bedlam_input/filtered_seq_000000.npz", allow_pickle=True)
     import ipdb; ipdb.set_trace()
     # 🔹 Extract necessary fields
     pose = torch.tensor(bedlam_data["pose_world"], dtype=torch.float32)  # Pose parameters
