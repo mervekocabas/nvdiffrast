@@ -361,9 +361,9 @@ if __name__ == "__main__":
     shape = torch.tensor(bedlam_data["shape"], dtype=torch.float32)      # SMPL Shape
     cam_int = torch.tensor(bedlam_data["cam_int"], dtype=torch.float32)  # Intrinsics
     cam_ext = torch.tensor(bedlam_data["cam_ext"], dtype=torch.float32)  # Extrinsics
-    cam_ext[:, 2] *= -1
     cam_int = cam_int.unsqueeze(0)
     cam_ext = cam_ext.unsqueeze(0)
+    cam_ext[:, 2] *= -1
     pose = pose.unsqueeze(0)
     shape = shape.unsqueeze(0)
 
