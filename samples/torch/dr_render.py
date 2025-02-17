@@ -413,7 +413,7 @@ if __name__ == "__main__":
     
     cam_ext = torch.eye(4, device='cuda', dtype=torch.float32)[None]
     # cam_ext[:, :3, :3] = torch.from_numpy(R).cuda().float()[None]
-    cam_ext[:, :3, 3] = torch.tensor([0, 0, -6], device='cuda', dtype=torch.float32)[None]
+    cam_ext[:, :3, 3] = torch.tensor([1, 0, -6], device='cuda', dtype=torch.float32)[None]
     # import ipdb; ipdb.set_trace()
     renderer = NVDRRenderer(cam_intrinsics=cam_int, init_smpl=True)
     print(renderer.projection_matrix)
