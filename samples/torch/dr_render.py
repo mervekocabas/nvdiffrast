@@ -351,7 +351,7 @@ if __name__ == "__main__":
         # Save the image with the correct filename
         img.save(img_path)
     """
-    """
+    
     bedlam_data = np.load("samples/data/bedlam_input/filtered_first_image.npz", allow_pickle=True)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
@@ -364,10 +364,8 @@ if __name__ == "__main__":
     cam_ext = cam_ext.unsqueeze(0)
     pose = pose.unsqueeze(0)
     shape = shape.unsqueeze(0)
-    
-    cam_ext = cam_ext.inverse() 
-    cam_ext[:, 1:3] *= -1
-    cam_ext = cam_ext.inverse() 
+     
+    cam_ext[:, 1:2] *= -1
 
     pose = pose.to(device)
     shape = shape.to(device)
@@ -422,4 +420,4 @@ if __name__ == "__main__":
     #img = renderer.forward(None, faces=None, cam_ext=cam_ext, return_pil_image=True, test_mode=True, return_rgba=True)
     print(img.size)
     img.save('outputs/coordinate_sys.png')
-  
+    """
