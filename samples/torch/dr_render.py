@@ -242,7 +242,6 @@ if __name__ == "__main__":
             cam_int = torch.tensor(bedlam_data["cam_int"][i], dtype=torch.float32).to(device)
             cam_ext = torch.tensor(bedlam_data["cam_ext"][i], dtype=torch.float32).to(device)
             import ipdb; ipdb.set_trace()
-            cam_ext[:, 2] *= -1
 
             # Store in batch lists
             all_cam_int.append(cam_int.unsqueeze(0))  
@@ -363,9 +362,12 @@ if __name__ == "__main__":
     cam_ext = torch.tensor(bedlam_data["cam_ext"], dtype=torch.float32)  # Extrinsics
     cam_int = cam_int.unsqueeze(0)
     cam_ext = cam_ext.unsqueeze(0)
-    cam_ext[:, 2] *= -1
     pose = pose.unsqueeze(0)
     shape = shape.unsqueeze(0)
+    
+    cam_ext = cam_ext.inverse() 
+    cam_ext[:, 1:3] *= -1
+    cam_ext[:, 3, 0:3] *= 0
 
     pose = pose.to(device)
     shape = shape.to(device)
