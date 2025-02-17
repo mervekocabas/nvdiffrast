@@ -378,6 +378,7 @@ if __name__ == "__main__":
     # 🔹 Prepare vertex colors (white by default)
     vertex_colors = torch.ones_like(vertices)  # (B, N, 3)
     
+    import ipdb; ipdb.set_trace()
     # 🔹 Initialize the Renderer
     renderer = NVDRRenderer(cam_intrinsics=cam_int, faces=faces)
 
