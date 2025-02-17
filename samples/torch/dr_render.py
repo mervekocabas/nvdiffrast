@@ -361,6 +361,8 @@ if __name__ == "__main__":
     cam_ext = torch.tensor(bedlam_data["cam_ext"], dtype=torch.float32)  # Extrinsics
     cam_int = cam_int.unsqueeze(0)
     cam_ext = cam_ext.unsqueeze(0)
+    pose = pose.unsqueeze(0)
+    shape = shape.unsqueeze(0)
 
     pose = pose.to(device)
     shape = shape.to(device)
