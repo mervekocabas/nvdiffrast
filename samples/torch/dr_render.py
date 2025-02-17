@@ -241,6 +241,8 @@ if __name__ == "__main__":
             # Get per-person camera matrices
             cam_int = torch.tensor(bedlam_data["cam_int"][i], dtype=torch.float32).to(device)
             cam_ext = torch.tensor(bedlam_data["cam_ext"][i], dtype=torch.float32).to(device)
+            import ipdb; ipdb.set_trace()
+            cam_ext[:, 2] *= -1
 
             # Store in batch lists
             all_cam_int.append(cam_int.unsqueeze(0))  
@@ -359,6 +361,7 @@ if __name__ == "__main__":
     shape = torch.tensor(bedlam_data["shape"], dtype=torch.float32)      # SMPL Shape
     cam_int = torch.tensor(bedlam_data["cam_int"], dtype=torch.float32)  # Intrinsics
     cam_ext = torch.tensor(bedlam_data["cam_ext"], dtype=torch.float32)  # Extrinsics
+    cam_ext[:, 2] *= -1
     cam_int = cam_int.unsqueeze(0)
     cam_ext = cam_ext.unsqueeze(0)
     pose = pose.unsqueeze(0)
@@ -377,7 +380,7 @@ if __name__ == "__main__":
     
     # 🔹 Prepare vertex colors (white by default)
     vertex_colors = torch.ones_like(vertices)  # (B, N, 3)
-    
+
     import ipdb; ipdb.set_trace()
     # 🔹 Initialize the Renderer
     renderer = NVDRRenderer(cam_intrinsics=cam_int, faces=faces)
