@@ -376,9 +376,9 @@ if __name__ == "__main__":
 
     smplx_output = smplx(body_pose=pose[:, 3:66], global_orient=pose[:,:3], betas=shape[:, :10],use_pca=False )
     vertices = smplx_output.vertices  # (B, N, 3)
-    # cam_trans = cam_ext[:3, 3].to(device)
-    # cam_trans[1] *= -1
-    cam_trans = torch.tensor([0, 0, -6]).to(device)
+    cam_trans = cam_ext[:3, 3].to(device)
+    cam_trans[2] *= -1
+    #cam_trans = torch.tensor([0, 0, -6]).to(device)
     vertices = vertices + cam_trans[None, None]
     faces = smplx.faces_tensor.to(torch.int32)  # SMPL faces
     
