@@ -418,7 +418,7 @@ if __name__ == "__main__":
     img = renderer.forward(vertices=vertices, faces=faces, vertex_colors=vertex_colors, cam_ext=cam_ext, return_pil_image=True)
 
     # 🔹 Save Image
-    img.save("outputs/cam_tests.png")
+    img.save("outputs/cam_test_human_two.png")
     
     """
     cam_int = torch.zeros(1, 4, 4)
