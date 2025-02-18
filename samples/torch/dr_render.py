@@ -375,6 +375,7 @@ if __name__ == "__main__":
     smplx = smplx.to(device) 
     c_trans = torch.from_numpy(bedlam_data['trans_cam']).to(device)
     import ipdb; ipdb.set_trace()
+    c_trans[1:] *= -1
     smplx_output = smplx(body_pose=pose[:, 3:66], global_orient=pose[:,:3], betas=shape[:, :10], transl=c_trans[None], use_pca=False )
     vertices = smplx_output.vertices  # (B, N, 3)
     cam_trans = cam_ext[:3, 3].to(device)
