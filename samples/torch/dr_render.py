@@ -353,7 +353,6 @@ if __name__ == "__main__":
     """
     
     bedlam_data = np.load("samples/data/bedlam_input/filtered_first_image.npz", allow_pickle=True)
-    import ipdb; ipdb.set_trace()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
     # 🔹 Extract necessary fields
@@ -377,15 +376,15 @@ if __name__ == "__main__":
 
     smplx_output = smplx(body_pose=pose[:, 3:66], global_orient=pose[:,:3], betas=shape[:, :10],use_pca=False )
     vertices = smplx_output.vertices  # (B, N, 3)
-    cam_trans = cam_ext[:3, 3].to(device)
-    cam_trans[1] *= -1
+    # cam_trans = cam_ext[:3, 3].to(device)
+    # cam_trans[1] *= -1
+    cam_trans = torch.tensor([0, 0, -6])
     vertices = vertices + cam_trans[None, None]
     faces = smplx.faces_tensor.to(torch.int32)  # SMPL faces
     
     # 🔹 Prepare vertex colors (white by default)
     vertex_colors = torch.ones_like(vertices)  # (B, N, 3)
 
-    import ipdb; ipdb.set_trace()
     # 🔹 Initialize the Renderer
     renderer = NVDRRenderer(cam_intrinsics=cam_int, faces=faces)
 
