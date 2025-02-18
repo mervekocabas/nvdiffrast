@@ -357,16 +357,16 @@ if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
     # 🔹 Extract necessary fields
-    pose = torch.tensor(bedlam_data["pose_world"], dtype=torch.float32)  # Pose parameters
+    pose = torch.tensor(bedlam_data["pose_cam"], dtype=torch.float32)  # Pose parameters
     shape = torch.tensor(bedlam_data["shape"], dtype=torch.float32)      # SMPL Shape
     cam_int = torch.tensor(bedlam_data["cam_int"], dtype=torch.float32)  # Intrinsics
-    cam_ext = torch.tensor(bedlam_data["cam_ext"], dtype=torch.float32)  # Extrinsics
+    #cam_ext = torch.tensor(bedlam_data["cam_ext"], dtype=torch.float32)  # Extrinsics
     cam_int = cam_int.unsqueeze(0)
-    cam_ext = cam_ext.unsqueeze(0)
+    #cam_ext = cam_ext.unsqueeze(0)
     pose = pose.unsqueeze(0)
     shape = shape.unsqueeze(0)
      
-    cam_ext[:, 2:3] *= -1
+    #cam_ext[:, 2:3] *= -1
     
     pose = pose.to(device)
     shape = shape.to(device)
@@ -387,6 +387,8 @@ if __name__ == "__main__":
     renderer = NVDRRenderer(cam_intrinsics=cam_int, faces=faces)
 
     # 🔹 Render Image
+    cam_ext = torch.eye(4)
+    cam_ext = cam_ext.unsqueeze(0)
     img = renderer.forward(vertices=vertices, faces=faces, vertex_colors=vertex_colors, cam_ext=cam_ext, return_pil_image=True)
 
     # 🔹 Save Image
