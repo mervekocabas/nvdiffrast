@@ -353,6 +353,7 @@ if __name__ == "__main__":
     """
     
     bedlam_data = np.load("samples/data/bedlam_input/filtered_first_image.npz", allow_pickle=True)
+    import ipdb; ipdb.set_trace()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
     # 🔹 Extract necessary fields
@@ -365,8 +366,8 @@ if __name__ == "__main__":
     pose = pose.unsqueeze(0)
     shape = shape.unsqueeze(0)
      
-    cam_ext[:, 1:2] *= -1
-
+    cam_ext[:, 2:3] *= -1
+    
     pose = pose.to(device)
     shape = shape.to(device)
     
