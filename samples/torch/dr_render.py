@@ -392,15 +392,15 @@ if __name__ == "__main__":
         ]
     ).to(device).float()
     
-    rot_y = torch.tensor(
+    rot_z = torch.tensor(
         [
             [-1, 0, 0],
-            [0, 1, 0],
-            [0, 0, -1],
+            [0, -1, 0],
+            [0, 0, 1],
         ]
     ).to(device).float()
     
-    rot_x = rot_y @ rot_x
+    rot_x = rot_z @ rot_x
     
     vertices = (rot_x[None, None] @ vertices[..., None])[..., 0]
     
