@@ -416,6 +416,7 @@ if __name__ == "__main__":
     cam_ext = torch.eye(4)
     cam_ext = cam_ext.unsqueeze(0)
     img = renderer.forward(vertices=vertices, faces=faces, vertex_colors=vertex_colors, cam_ext=cam_ext, return_pil_image=True)
+    import ipdb; ipdb.set_trace()
     img = img[::-1, :, :]
     
     image_path = "samples/data/bedlam_input/seq_000000/seq_000000_0120.png"
