@@ -373,11 +373,13 @@ if __name__ == "__main__":
     # 🔹 Initialize SMPL Model
     smplx = SMPLX('samples/data/body_models/smplx/models/smplx/', gender='female').cuda()
     smplx = smplx.to(device) 
+    c_trans = torch.from_numpy(bedlam_data['trans_cam']).to(device)
 
-    smplx_output = smplx(body_pose=pose[:, 3:66], global_orient=pose[:,:3], betas=shape[:, :10],use_pca=False )
+    smplx_output = smplx(body_pose=pose[:, 3:66], global_orient=pose[:,:3], betas=shape[:, :10], transl=c_trans, use_pca=False )
     vertices = smplx_output.vertices  # (B, N, 3)
     cam_trans = cam_ext[:3, 3].to(device)
     cam_trans[2] *= -1
+    cam_trans[1] *= -1
     
     
     #cam_trans = torch.tensor([0, 0, -6]).to(device)
