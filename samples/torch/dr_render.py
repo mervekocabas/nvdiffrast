@@ -390,7 +390,7 @@ if __name__ == "__main__":
             [0, -1, 0],
             [0, 0, -1],
         ]
-    ).to(device)
+    ).to(device).float()
     
     vertices = (rot_x[None, None] @ vertices[..., None])[..., 0]
     
