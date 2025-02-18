@@ -360,7 +360,7 @@ if __name__ == "__main__":
     pose = torch.tensor(bedlam_data["pose_cam"], dtype=torch.float32)  # Pose parameters
     shape = torch.tensor(bedlam_data["shape"], dtype=torch.float32)      # SMPL Shape
     cam_int = torch.tensor(bedlam_data["cam_int"], dtype=torch.float32)  # Intrinsics
-    #cam_ext = torch.tensor(bedlam_data["cam_ext"], dtype=torch.float32)  # Extrinsics
+    cam_ext = torch.tensor(bedlam_data["cam_ext"], dtype=torch.float32)  # Extrinsics
     cam_int = cam_int.unsqueeze(0)
     #cam_ext = cam_ext.unsqueeze(0)
     pose = pose.unsqueeze(0)
@@ -377,6 +377,8 @@ if __name__ == "__main__":
 
     smplx_output = smplx(body_pose=pose[:, 3:66], global_orient=pose[:,:3], betas=shape[:, :10],use_pca=False )
     vertices = smplx_output.vertices  # (B, N, 3)
+    cam_trans = cam_ext[:3, 3]
+    vertices = vertices + cam_trans[None, None]
     faces = smplx.faces_tensor.to(torch.int32)  # SMPL faces
     
     # 🔹 Prepare vertex colors (white by default)
