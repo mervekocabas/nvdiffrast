@@ -352,7 +352,7 @@ if __name__ == "__main__":
         img.save(img_path)
     """
     
-    bedlam_data = np.load("samples/data/bedlam_input/filtered_first_image.npz", allow_pickle=True)
+    bedlam_data = np.load("samples/data/bedlam_input/filtered_second_human_image.npz", allow_pickle=True)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
     # 🔹 Extract necessary fields
