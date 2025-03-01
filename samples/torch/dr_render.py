@@ -356,8 +356,8 @@ if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
     # 🔹 Extract necessary fields
-    pose = torch.tensor(bedlam_data["pose_world"], dtype=torch.float32)  # Pose parameters
-    shape = torch.tensor(bedlam_data["shape"], dtype=torch.float32)      # SMPL Shape
+    pose = torch.tensor(bedlam_data["poses_world"], dtype=torch.float32)  # Pose parameters
+    shape = torch.tensor(bedlam_data["betas"], dtype=torch.float32)      # SMPL Shape
     cam_int = torch.tensor(bedlam_data["cam_int"], dtype=torch.float32)  # Intrinsics
     cam_ext = torch.tensor(bedlam_data["cam_ext"], dtype=torch.float32)  # Extrinsics
     cam_int = cam_int.unsqueeze(0)
