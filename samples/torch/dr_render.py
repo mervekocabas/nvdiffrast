@@ -418,21 +418,22 @@ if __name__ == "__main__":
     cam_ext = cam_ext.unsqueeze(0)
     img = renderer.forward(vertices=vertices, faces=faces, vertex_colors=vertex_colors, cam_ext=cam_ext, return_pil_image=True)
     
-    img = np.asarray(img)[:, ::-1]
-    rgb = img[..., :3]
-    alpha = img[..., 3:]
     
-    image_path = "samples/data/bedlam_input/seq_000000/seq_000000_0000.png"
-    orig_img_f = Image.open(image_path).convert("RGB")  # Ensure it's RGB
+    #img = np.asarray(img)[:, ::-1]
+    #rgb = img[..., :3]
+    #alpha = img[..., 3:]
+    
+    #image_path = "samples/data/bedlam_input/seq_000000/seq_000000_0000.png"
+    #orig_img_f = Image.open(image_path).convert("RGB")  # Ensure it's RGB
 
     # Convert to NumPy array
-    orig_img = np.array(orig_img_f) 
-    overlay = alpha * rgb.astype(np.float32)
-    bg = (1.0 - alpha) * orig_img.astype(np.float32)
-    overlay_img = (bg + overlay).astype(np.uint8)    
+    #orig_img = np.array(orig_img_f) 
+    #overlay = alpha * rgb.astype(np.float32)
+    #bg = (1.0 - alpha) * orig_img.astype(np.float32)
+    #overlay_img = (bg + overlay).astype(np.uint8)    
     # 🔹 Save Image
     
-    img = Image.fromarray(overlay_img)
+    #img = Image.fromarray(overlay_img
     img.save("outputs/cam_test_30_fps.png")
     
     """
