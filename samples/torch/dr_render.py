@@ -352,7 +352,7 @@ if __name__ == "__main__":
         img.save(img_path)
     """
     
-    bedlam_data = np.load("samples/data/bedlam_input/filtered_second_human_image.npz", allow_pickle=True)
+    bedlam_data = np.load("samples/data/bedlam_input/first_entry.npz", allow_pickle=True)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
     # 🔹 Extract necessary fields
@@ -373,36 +373,37 @@ if __name__ == "__main__":
     # 🔹 Initialize SMPL Model
     smplx = SMPLX('samples/data/body_models/smplx/models/smplx/', gender='female').cuda()
     smplx = smplx.to(device) 
-    c_trans = torch.from_numpy(bedlam_data['trans_cam']).to(device)
+    #c_trans = torch.from_numpy(bedlam_data['trans_cam']).to(device)
     # import ipdb; ipdb.set_trace()
     # c_trans[1:] *= -1
-    smplx_output = smplx(body_pose=pose[:, 3:66], global_orient=pose[:,:3], betas=shape[:, :10], transl=c_trans[None], use_pca=False )
+    #smplx_output = smplx(body_pose=pose[:, 3:66], global_orient=pose[:,:3], betas=shape[:, :10], transl=c_trans[None], use_pca=False )
+    smplx_output = smplx(body_pose=pose[:, 3:66], global_orient=pose[:,:3], betas=shape[:, :10], use_pca=False )
     vertices = smplx_output.vertices  # (B, N, 3)
-    cam_trans = cam_ext[:3, 3].to(device)
+    #cam_trans = cam_ext[:3, 3].to(device)
     # cam_trans[2] *= -1
     # cam_trans[1] *= -1
     #cam_trans = torch.tensor([0, 0, -6]).to(device)
-    vertices = vertices + cam_trans[None, None]
+    #vertices = vertices + cam_trans[None, None]
     
-    rot_x = torch.tensor(
-        [
-            [1, 0, 0],
-            [0, -1, 0],
-            [0, 0, -1],
-        ]
-    ).to(device).float()
+    #rot_x = torch.tensor(
+    #    [
+    #        [1, 0, 0],
+    #        [0, -1, 0],
+    #        [0, 0, -1],
+    #    ]
+    #).to(device).float()
     
-    rot_z = torch.tensor(
-        [
-            [-1, 0, 0],
-            [0, -1, 0],
-            [0, 0, 1],
-        ]
-    ).to(device).float()
+    #rot_z = torch.tensor(
+    #    [
+    #        [-1, 0, 0],
+    #        [0, -1, 0],
+    #        [0, 0, 1],
+    #    ]
+    #).to(device).float()
     
-    rot_x = rot_z @ rot_x
+    #rot_x = rot_z @ rot_x
     
-    vertices = (rot_x[None, None] @ vertices[..., None])[..., 0]
+    #vertices = (rot_x[None, None] @ vertices[..., None])[..., 0]
     
     faces = smplx.faces_tensor.to(torch.int32)  # SMPL faces
     
@@ -416,20 +417,23 @@ if __name__ == "__main__":
     cam_ext = torch.eye(4)
     cam_ext = cam_ext.unsqueeze(0)
     img = renderer.forward(vertices=vertices, faces=faces, vertex_colors=vertex_colors, cam_ext=cam_ext, return_pil_image=True)
-    import ipdb; ipdb.set_trace()
-    img = img[::-1, :, :]
     
-    image_path = "samples/data/bedlam_input/seq_000000/seq_000000_0120.png"
-    image = Image.open(image_path).convert("RGB")  # Ensure it's RGB
+    img = np.asarray(img)[:, ::-1]
+    rgb = img[..., :3]
+    alpha = img[..., 3:]
+    
+    image_path = "samples/data/bedlam_input/seq_000000/seq_000000_0000.png"
+    orig_img_f = Image.open(image_path).convert("RGB")  # Ensure it's RGB
 
     # Convert to NumPy array
-    orig_img = np.array(image)  
-    
+    orig_img = np.array(orig_img_f) 
+    overlay = alpha * rgb.astype(np.float32)
+    bg = (1.0 - alpha) * orig_img.astype(np.float32)
+    overlay_img = (bg + overlay).astype(np.uint8)    
     # 🔹 Save Image
     
-    import ipdb; ipdb.set_trace()
-    
-    img.save("outputs/cam_test_human_two.png")
+    img = Image.fromarray(overlay_img)
+    img.save("outputs/cam_test_30_fps.png")
     
     """
     cam_int = torch.zeros(1, 4, 4)
@@ -461,3 +465,5 @@ if __name__ == "__main__":
     print(img.size)
     img.save('outputs/coordinate_sys.png')
     """
+    
+    
