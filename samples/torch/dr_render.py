@@ -365,7 +365,7 @@ if __name__ == "__main__":
     pose = pose.unsqueeze(0)
     shape = shape.unsqueeze(0)
      
-    #cam_ext[:, 2:3] *= -1
+    cam_ext[:, 2:3] *= -1
     
     pose = pose.to(device)
     shape = shape.to(device)
