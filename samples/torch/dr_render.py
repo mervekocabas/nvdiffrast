@@ -416,7 +416,7 @@ if __name__ == "__main__":
     # 🔹 Render Image
     cam_ext = torch.eye(4)
     cam_ext = cam_ext.unsqueeze(0)
-    img = renderer.forward(vertices=vertices, faces=faces, vertex_colors=vertex_colors, cam_ext=cam_ext, return_pil_image=True)
+    img = renderer.forward(vertices=vertices, faces=faces, vertex_colors=vertex_colors, cam_ext=cam_ext, return_pil_image=True,return_rgba=True)
     
     
     #img = np.asarray(img)[:, ::-1]
