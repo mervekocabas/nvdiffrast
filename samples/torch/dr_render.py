@@ -414,8 +414,8 @@ if __name__ == "__main__":
     renderer = NVDRRenderer(cam_intrinsics=cam_int, faces=faces)
 
     # 🔹 Render Image
-    cam_ext = torch.eye(4)
-    cam_ext = cam_ext.unsqueeze(0)
+    #cam_ext = torch.eye(4)
+    #cam_ext = cam_ext.unsqueeze(0)
     img = renderer.forward(vertices=vertices, faces=faces, vertex_colors=vertex_colors, cam_ext=cam_ext, return_pil_image=True,return_rgba=True)
     
     
