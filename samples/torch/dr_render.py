@@ -372,8 +372,8 @@ if __name__ == "__main__":
     smplx = SMPLX('samples/data/body_models/smplx/models/smplx/', gender='female').cuda()
     smplx = smplx.to(device) 
     #c_trans = torch.from_numpy(bedlam_data['trans_cam']).to(device)
-    import ipdb; ipdb.set_trace()
-    c_trans = bedlam_data["trans_cam"] + bedlam_data["cam_ext"][:, :3, 3]
+    
+    c_trans = bedlam_data["trans_cam"] + bedlam_data["cam_ext"][:3, 3]
 
    
     #c_trans[1:] *= -1
