@@ -373,7 +373,7 @@ if __name__ == "__main__":
     smplx = smplx.to(device) 
     #c_trans = torch.from_numpy(bedlam_data['trans_cam']).to(device)
     
-    c_trans = bedlam_data["trans_cam"] + bedlam_data["cam_ext"][:3, 3]
+    c_trans = torch.tensor(bedlam_data["trans_cam"] + bedlam_data["cam_ext"][:3, 3], dtype=torch.float32)
 
    
     #c_trans[1:] *= -1
